@@ -105,7 +105,7 @@ class JanelaDeEscolhaDeNick extends    JFrame
                 try
                 {
                     this.servidor.receba (
-                    new Comunicado ("NIK", this.txfNick.getText ()));
+                    new Comunicado ("NIK", this.txfNick.getText ())); // TODO: Fazer enviar a escolha tambem do tema 
 
                     Comunicado comunicado = this.servidor.envie ();
 

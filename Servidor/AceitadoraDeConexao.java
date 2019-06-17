@@ -4,16 +4,17 @@ import java.util.*;
 public class AceitadoraDeConexao extends Thread
 {
     private ServerSocket             pedido;
-    private HashMap<String,Parceiro> usuarios;
+    private HashMap<String,HashMap<String,Parceiro>> tematico;
+	
 
     public AceitadoraDeConexao
-    (int porta, HashMap<String,Parceiro> usuarios)
+    (int porta, HashMap<String,HashMap<String,Parceiro>> tematico)
     throws Exception
     {
-        if (usuarios==null)
+        if (tematico==null)
             throw new Exception ("Usuarios ausentes");
 
-        this.usuarios = usuarios;
+        this.tematico = tematico;
 
         try
         {
@@ -44,7 +45,7 @@ public class AceitadoraDeConexao extends Thread
             try
             {
                 supervisoraDeConexao =
-                new SupervisoraDeConexao (conexao, usuarios);
+                new SupervisoraDeConexao (conexao, tematico);
             }
             catch (Exception erro)
             {} // sei que passei parametros corretos para o construtor

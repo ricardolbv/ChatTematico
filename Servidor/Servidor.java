@@ -17,14 +17,24 @@ public class Servidor
         if (args.length==1)
             porta = Integer.parseInt(args[0]);
 
-        HashMap<String,Parceiro> usuarios =
+        HashMap<String,Parceiro> usuarios =      
         new HashMap<String,Parceiro> ();
+		
+		
+		//___________________________________________________________________________------->
+		//Aqui vou incilaizar a conexao com o bd e tambem criar o hash map, por enquanto vou inicializar um!!
+		HashMap<String,HashMap<String,Parceiro>> tematico = new HashMap<>();
+		
+		tematico.put("Amor",usuarios);
+		tematico.put("Dinheiro",usuarios);
+		tematico.put("Futebol",usuarios);
+		// vou levar esse cara para a supervisora de conexao
 
         AceitadoraDeConexao aceitadoraDeConexao=null;
         try
         {
             aceitadoraDeConexao =
-            new AceitadoraDeConexao  (porta, usuarios);
+            new AceitadoraDeConexao  (porta, tematico);
             aceitadoraDeConexao.start();
 
         }
@@ -54,31 +64,13 @@ public class Servidor
             catch (Exception erro)
             {}
 			
-			
-			/*
-			//Esse é a tentativa de enviar um comunicado para os clientes
-			if ((comando.toLowerCase().equals("disp")))
-			{
-				synchronized (usuarios)
-                {
-                    for (Parceiro usuario:usuarios.values())
-                    {
-                        try
-                        {
-                            usuario.receba (new Comunicado ("disp","test"));
-                        }
-                        catch (Exception erro)
-                        {}
-                    }
-                }
-			}*/
-			
 
-            if (comando.toLowerCase().equals("desativar"))
+			// Preciso iterar sobre as paradas de conexao tematica
+            if (comando.toLowerCase().equals("desativar")) // Talvez tenha que mexer aqui, para usar o hash String
             {
-                synchronized (usuarios)
+                synchronized (tematico)
                 {
-                    for (Parceiro usuario:usuarios.values())
+                    for (Parceiro usuario:tematico.values().values())
                     {
                         try
                         {
@@ -89,6 +81,13 @@ public class Servidor
                         {}
                     }
                 }
+				
+				/*for (String key1 : outerMap.keySet()) {
+    Map innerMap = outerMap.get(key1);
+    for (String key2: innerMap.keySet()) {
+        // process here.
+    }
+}*/
 
                 System.out.println ("O servidor foi desativado!\n");
                 System.exit(0);
