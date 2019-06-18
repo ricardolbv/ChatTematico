@@ -9,7 +9,7 @@ public class SupervisoraDeConexao extends Thread
     private Parceiro                 usuario;
     private Socket                   conexao;
     private  HashMap<String,HashMap<String,Parceiro>> usuarios;
-	private HashMap<String, Parceiro> aux;
+//	private HashMap<String, Parceiro> aux;
 
     public SupervisoraDeConexao
     (Socket conexao,  HashMap<String,HashMap<String,Parceiro>> usuarios)
@@ -83,19 +83,19 @@ public class SupervisoraDeConexao extends Thread
 
 				this.nick = comunicado.getComplemento1(); // Talvez aqui eu tenha de ler um outro comando que é o de ecolha de tema
 				this.tema = comunicado.getComplemento2();
-				this.aux  = this.usuarios.get(this.tema);
+			//	this.aux  = this.usuarios.get(this.tema);
 				
-				if (this.nick==null) // nao checar tema 
+				if (this.nick==null || this.tema == null) // nao checar tema 
 					return;
 
 				synchronized (this.usuarios)
 				{
-					if (this.usuarios.get (this.tema)==null)
+					if (this.usuarios.get(this.tema)==null) // Tema inexistente
 					{
                         this.usuarios.put (this.tema, new HashMap<String, Parceiro>());
      
 					}
-                    if(this.usuarios.get(this.tema).get(this.nick) == null)
+                    if(this.usuarios.get(this.tema).get(this.nick) == null) // Se apenas o nick é vazio mais tema existe 
                     {
                         this.usuarios.get(this.tema).put(this.nick,this.usuario);
                         break;                   
@@ -109,8 +109,8 @@ public class SupervisoraDeConexao extends Thread
 		}
 		catch (Exception erro)
 		{
-			if (this.usuarios.get (this.nick)!=null)
-			    this.usuarios.remove (this.nick);
+			if (this.usuarios.get(this.tema).get(this.nick)!=null) // nao esta retirando
+			    this.usuarios.get(this.tema).remove(this.nick);
 
             try
             {
@@ -125,18 +125,21 @@ public class SupervisoraDeConexao extends Thread
 
         try
         {
-			synchronized (this.aux)
+			synchronized (this.usuarios)
 			{
-				Set<String> nicks = this.aux.keySet();
-					
+				Set<String> nicks = null;
+				for (HashMap users:usuarios.values())  // Percorro todos os temas para ver se ha ambiguidade!
+                    {
+				       nicks = users.keySet();
+					}
 				for (String nick:nicks)
-					if (!nick.equals(this.nick))
+					if (!nick.equals(this.nick))  //Se nao tiver nick igual, entra no chat!
 					{
 						this.usuario.receba (
 						new Comunicado (
 						"ENT", nick));
 						
-						this.aux.get(nick).receba(
+						this.usuarios.get(this.tema).get(nick).receba(
 						new Comunicado(
 						"ENT",this.nick));
 					}
@@ -153,21 +156,21 @@ public class SupervisoraDeConexao extends Thread
 					String texto        = comunicado.getComplemento3();
 
 					if (destinatario.equals("TODOS"))
-						synchronized (this.aux)
+						synchronized (this.usuarios)
 						{
-							Set<String> nicks = this.aux.keySet();
+							Set<String> nicks = this.usuarios.get(this.tema).keySet();
 
 							for (String nick:nicks)
 								if (!nick.equals(this.nick))
 								{
-									this.aux.get(nick).receba (
+									this.usuarios.get(this.tema).get(nick).receba (
 									new Comunicado (
 									"MSG", remetente, texto));
 								}
 						}
 					else
 					{
-						this.aux.get(destinatario).receba (
+						this.usuarios.get(this.tema).get(destinatario).receba (
 						new Comunicado (
 						"MSG", remetente, texto));
 					}
@@ -176,18 +179,18 @@ public class SupervisoraDeConexao extends Thread
 					break;
 			}
 
-			synchronized (this.aux)
+			synchronized (this.usuarios)
 			{
-				Set<String> nicks = this.aux.keySet();
+				Set<String> nicks = this.usuarios.get(this.tema).keySet();
 
 				for (String nick:nicks)
 					if (!nick.equals(this.nick))
 					{
-						this.aux.get(nick).receba (
+						this.usuarios.get(this.tema).get(nick).receba (
 						new Comunicado ("FOI", this.nick));
 					}
 
-				this.aux.remove (this.nick);
+				this.usuarios.get(this.tema).remove(this.nick);
 			}
 
 			this.usuario.adeus ();
