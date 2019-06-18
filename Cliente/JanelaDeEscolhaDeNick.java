@@ -17,6 +17,8 @@ class JanelaDeEscolhaDeNick extends    JFrame
 
     private JButton    btnOk   = new JButton    ("OK");
     private JTextField txfNick = new JTextField ();
+	private JTextField txfTema = new JTextField ();  // Vou por o tema aqui,
+	
 
     public JanelaDeEscolhaDeNick (Parceiro servidor)
     throws Exception
@@ -34,9 +36,13 @@ class JanelaDeEscolhaDeNick extends    JFrame
 
         this.btnOk  .setFont (fntPtFixa);
         this.txfNick.setFont (fntPtVar);
+		this.txfTema.setFont (fntPtVar);
 
         JLabel lblNick = new JLabel ("Nick:");
         lblNick.setFont (fntPtFixa);
+		
+		JLabel lblTema = new JLabel ("Tema:");
+        lblTema.setFont (fntPtFixa);
 
         this.setLayout (new GridLayout (5,1));
 
@@ -45,6 +51,9 @@ class JanelaDeEscolhaDeNick extends    JFrame
         this.add (this.txfNick);
         this.add (btnOk);
         this.add (new JLabel ());
+		this.add (new JLabel ());
+		this.add (lblTema);
+		this.add (this.txfTema);
 
         this .addWindowListener (this);
         btnOk.addMouseListener  (this);
@@ -105,7 +114,7 @@ class JanelaDeEscolhaDeNick extends    JFrame
                 try
                 {
                     this.servidor.receba (
-                    new Comunicado ("NIK", this.txfNick.getText ())); // TODO: Fazer enviar a escolha tambem do tema 
+                    new Comunicado ("NIK", this.txfNick.getText (), this.txfTema.getText())); // TODO: Fazer enviar a escolha tambem do tema 
 
                     Comunicado comunicado = this.servidor.envie ();
 

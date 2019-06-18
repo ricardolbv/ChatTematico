@@ -25,10 +25,10 @@ public class Servidor
 		//Aqui vou incilaizar a conexao com o bd e tambem criar o hash map, por enquanto vou inicializar um!!
 		HashMap<String,HashMap<String,Parceiro>> tematico = new HashMap<>();
 		
-		tematico.put("Amor",usuarios);
-		tematico.put("Dinheiro",usuarios);
-		tematico.put("Futebol",usuarios);
-		// vou levar esse cara para a supervisora de conexao
+		/*
+		tematico.put("Dinheiro",null);
+		tematico.put("Futebol",null);
+		*/ //vou levar esse cara para a supervisora de conexao
 
         AceitadoraDeConexao aceitadoraDeConexao=null;
         try
@@ -70,15 +70,20 @@ public class Servidor
             {
                 synchronized (tematico)
                 {
-                    for (Parceiro usuario:tematico.values().values())
+                    for (HashMap usuario:tematico.values())
                     {
-                        try
-                        {
-                            usuario.receba (new Comunicado ("FIM"));
-                            usuario.adeus  ();
-                        }
-                        catch (Exception erro)
-                        {}
+						for(Object usuariosTema:usuario.values())
+						{
+							try
+							{
+								Parceiro users = (Parceiro)usuariosTema;
+								users.receba (new Comunicado ("FIM"));
+								users.adeus  ();
+							}
+							catch (Exception erro)
+							{}
+                    
+						}
                     }
                 }
 				

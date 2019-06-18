@@ -5,12 +5,14 @@ import java.util.*;
 public class SupervisoraDeConexao extends Thread
 {
     private String                   nick;
+	private String					 tema;
     private Parceiro                 usuario;
     private Socket                   conexao;
-    private HashMap<String,Parceiro> usuarios;
+    private  HashMap<String,HashMap<String,Parceiro>> usuarios;
+	private HashMap<String, Parceiro> aux;
 
     public SupervisoraDeConexao
-    (Socket conexao, HashMap<String,Parceiro> usuarios)
+    (Socket conexao,  HashMap<String,HashMap<String,Parceiro>> usuarios)
     throws Exception
     {
         if (conexao==null)
@@ -80,17 +82,24 @@ public class SupervisoraDeConexao extends Thread
 					return;
 
 				this.nick = comunicado.getComplemento1(); // Talvez aqui eu tenha de ler um outro comando que é o de ecolha de tema
-
-				if (this.nick==null)  //Aqui eu checo tema e o nick
+				this.tema = comunicado.getComplemento2();
+				this.aux  = this.usuarios.get(this.tema);
+				
+				if (this.nick==null) // nao checar tema 
 					return;
 
 				synchronized (this.usuarios)
 				{
-					if (this.usuarios.get (this.nick)==null)
+					if (this.usuarios.get (this.tema)==null)
 					{
-						this.usuarios.put (this.nick, this.usuario);
-						break;
+                        this.usuarios.put (this.tema, new HashMap<String, Parceiro>());
+     
 					}
+                    if(this.usuarios.get(this.tema).get(this.nick) == null)
+                    {
+                        this.usuarios.get(this.tema).put(this.nick,this.usuario);
+                        break;                   
+                   }
 				}
 
 				this.usuario.receba (new Comunicado ("ERR"));
@@ -116,20 +125,20 @@ public class SupervisoraDeConexao extends Thread
 
         try
         {
-			synchronized (this.usuarios)
+			synchronized (this.aux)
 			{
-				Set<String> nicks = this.usuarios.keySet();
-
+				Set<String> nicks = this.aux.keySet();
+					
 				for (String nick:nicks)
 					if (!nick.equals(this.nick))
 					{
 						this.usuario.receba (
 						new Comunicado (
 						"ENT", nick));
-
-						this.usuarios.get(nick).receba (
-						new Comunicado (
-						"ENT", this.nick));
+						
+						this.aux.get(nick).receba(
+						new Comunicado(
+						"ENT",this.nick));
 					}
 			}
 
@@ -144,21 +153,21 @@ public class SupervisoraDeConexao extends Thread
 					String texto        = comunicado.getComplemento3();
 
 					if (destinatario.equals("TODOS"))
-						synchronized (this.usuarios)
+						synchronized (this.aux)
 						{
-							Set<String> nicks = this.usuarios.keySet();
+							Set<String> nicks = this.aux.keySet();
 
 							for (String nick:nicks)
 								if (!nick.equals(this.nick))
 								{
-									this.usuarios.get(nick).receba (
+									this.aux.get(nick).receba (
 									new Comunicado (
 									"MSG", remetente, texto));
 								}
 						}
 					else
 					{
-						this.usuarios.get(destinatario).receba (
+						this.aux.get(destinatario).receba (
 						new Comunicado (
 						"MSG", remetente, texto));
 					}
@@ -167,18 +176,18 @@ public class SupervisoraDeConexao extends Thread
 					break;
 			}
 
-			synchronized (this.usuarios)
+			synchronized (this.aux)
 			{
-				Set<String> nicks = this.usuarios.keySet();
+				Set<String> nicks = this.aux.keySet();
 
 				for (String nick:nicks)
 					if (!nick.equals(this.nick))
 					{
-						this.usuarios.get(nick).receba (
+						this.aux.get(nick).receba (
 						new Comunicado ("FOI", this.nick));
 					}
 
-				this.usuarios.remove (this.nick);
+				this.aux.remove (this.nick);
 			}
 
 			this.usuario.adeus ();
