@@ -47,6 +47,9 @@ public class Servidor
 		
 		//Vou pegar temas do BD
 		
+		//Vou enviar o comunicado dos tipos de temas
+		
+		
 		
 
         for(;;)
@@ -87,12 +90,8 @@ public class Servidor
                     }
                 }
 				
-				/*for (String key1 : outerMap.keySet()) {
-    Map innerMap = outerMap.get(key1);
-    for (String key2: innerMap.keySet()) {
-        // process here.
-    }
-}*/
+	
+
 
                 System.out.println ("O servidor foi desativado!\n");
                 System.exit(0);

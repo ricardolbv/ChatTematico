@@ -16,8 +16,9 @@ class JanelaDeChat extends    JFrame
 {
     private static final long serialVersionUID = 2423272621216229844L;
 
-    private String            nick;
+	private String            nick;
     private Parceiro          servidor;
+	private String 			  tema;
     private ArrayList<String> usuarios;
 
     private JButton btnEnviar =
@@ -33,7 +34,7 @@ class JanelaDeChat extends    JFrame
     private JList<String> lstUsuarios =
     new JList<String> (this.modUsuarios);
 
-    public JanelaDeChat (String nick, Parceiro servidor)
+    public JanelaDeChat (String nick, Parceiro servidor, String tema)
     throws Exception
     {
         if (nick==null || nick.equals(""))
@@ -43,10 +44,15 @@ class JanelaDeChat extends    JFrame
 
         if (servidor==null)
             throw new Exception ("Servidor ausente");
+		
+		this.servidor = servidor;
+		
+		if (tema==null)
+			throw new Exception ("Tema Ausente");
 
-        this.servidor = servidor;
+        this.tema = tema;
 
-        this.setTitle ("Bate-papo de "+nick.toUpperCase());
+        this.setTitle ("USUARIO: "+nick.toUpperCase() +"   TEMA: "+tema.toUpperCase());
         this.setSize  (700, 490);
 
         Font fntPtFixa  = new Font ("Arial", Font.BOLD,  16);

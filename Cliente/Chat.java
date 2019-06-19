@@ -69,12 +69,27 @@ public class Chat
             System.err.println ("Indique o servidor e a porta corretos!\n");
             return;
         }
+		
+		
+		String temas = "";
+		try
+		{	
+													// Recebendo temas do Servidor!
+		Comunicado recado = servidor.envie(); 
+		if (recado.getComando().equals("TEMAS"))
+			System.out.println("Temas Recebidos");
+			temas += " "+recado.getComplemento1();
+			temas += " "+recado.getComplemento2();
+			temas += " "+recado.getComplemento3();
+		}
+		catch(Exception erro)
+		{erro.getMessage();}
 
         JanelaDeEscolhaDeNick janelaDeEscolhaDeNick=null;
         try
         {
             janelaDeEscolhaDeNick =
-            new JanelaDeEscolhaDeNick (servidor);
+            new JanelaDeEscolhaDeNick (servidor, temas);
         }
         catch (Exception erro)
         {} // try/catch anterior garante ausencia de erro aqui
@@ -83,23 +98,18 @@ public class Chat
         janelaDeEscolhaDeNick.getJanelaDeChat ();
         janelaDeEscolhaDeNick.setVisible      (false);
         janelaDeEscolhaDeNick.dispose         ();
-
+	
+	
         for(;;)
         {
             try
             {	
 				Comunicado comunicado = servidor.envie ();
 				
-				/*
-				//Esse if é a de tetnativa de comunicado
-				if (comunicado.getComando().equals("disp"))
-                {
-					String test;
-					test = comunicado.getComplemento1();
-					System.out.println("Vamos ver oq tem: "+test);
-				}*/
+			
 				if (comunicado==null) // servidor desconectou
 					break;
+					
 				else if (comunicado.getComando().equals ("MSG"))
 				{
 					String remetente = comunicado.getComplemento1();
@@ -108,7 +118,10 @@ public class Chat
     				janelaDeChat.novaMensagem (remetente,
 											   "Você", // destinatario
 											   texto);
+											 
 				}
+
+		
                 else if (comunicado.getComando().equals ("ENT"))
                 {
 					String nick = comunicado.getComplemento1();

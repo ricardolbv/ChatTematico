@@ -1,8 +1,12 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.*;
 import java.io.*;
+
+
+
 
 class JanelaDeEscolhaDeNick extends    JFrame
                             implements WindowListener,
@@ -14,22 +18,35 @@ class JanelaDeEscolhaDeNick extends    JFrame
     private JanelaDeChat janelaDeChat;
 
     private Parceiro servidor;
+	private String temas;
 
     private JButton    btnOk   = new JButton    ("OK");
     private JTextField txfNick = new JTextField ();
 	private JTextField txfTema = new JTextField ();  // Vou por o tema aqui,
 	
+	
+	
 
-    public JanelaDeEscolhaDeNick (Parceiro servidor)
+    public JanelaDeEscolhaDeNick (Parceiro servidor, String temas)
     throws Exception
     {
         if (servidor==null)
             throw new Exception ("Servidor indisponivel");
+		
+		if (temas==null)
+			throw new Exception ("Temas indisponiveis");
 
         this.servidor = servidor;
+		this.temas = temas;
+		
+		
+		
+		
+	//	Jlabel tema = new Jlabel ("Temas: ")
+		
 
         this.setTitle ("Escolha de nick");
-        this.setSize  (350, 200);
+        this.setSize  (650, 200);
 
         Font fntPtFixa  = new Font ("Arial", Font.BOLD,  16);
         Font fntPtVar   = new Font ("Arial", Font.PLAIN, 13);
@@ -43,17 +60,25 @@ class JanelaDeEscolhaDeNick extends    JFrame
 		
 		JLabel lblTema = new JLabel ("Tema:");
         lblTema.setFont (fntPtFixa);
+		
+		JLabel lblTemas = new JLabel ("->"+temas);
+		lblTemas.setFont (fntPtFixa);
 
-        this.setLayout (new GridLayout (5,1));
+        this.setLayout (new GridLayout (3,1));
 
         this.add (new JLabel ());
         this.add (lblNick);
         this.add (this.txfNick);
-        this.add (btnOk);
-        this.add (new JLabel ());
 		this.add (new JLabel ());
 		this.add (lblTema);
 		this.add (this.txfTema);
+        this.add (btnOk);
+        this.add (new JLabel ());
+		//this.add (new JLabel ());
+		this.add(lblTemas);
+		//this.add (new JLabel ());
+		//this.add (lblTema);
+		//this.add (this.txfTema);
 
         this .addWindowListener (this);
         btnOk.addMouseListener  (this);
@@ -63,7 +88,7 @@ class JanelaDeEscolhaDeNick extends    JFrame
 
         this.setVisible (true);
     }
-
+		
     public JanelaDeChat getJanelaDeChat ()
     {
         while (this.janelaDeChat==null)
@@ -103,6 +128,9 @@ class JanelaDeEscolhaDeNick extends    JFrame
 
     private void trateClickEmOk ()
     {
+						// verifico se o tema digitado esta entre os diponiveis!!!
+			
+			
         if (!this.txfNick.getText().equals(""))
         {
             boolean nickCerto = true;
@@ -130,6 +158,7 @@ class JanelaDeEscolhaDeNick extends    JFrame
                     return;
                 }
             }
+			
 
             if (nickCerto)
             {
@@ -141,7 +170,7 @@ class JanelaDeEscolhaDeNick extends    JFrame
 
                     this.janelaDeChat =
                     new JanelaDeChat (
-                                        this.txfNick.getText(),this.servidor);
+                                        this.txfNick.getText(),this.servidor,this.txfTema.getText());
                 }
                 catch (Exception erro)
                 {} // sei que nem nick, nem servidor sao null
@@ -151,7 +180,8 @@ class JanelaDeEscolhaDeNick extends    JFrame
                 "O nick escolhido é inválido ou já está em uso!",
                 "Escolha outro nick",
                 JOptionPane.ERROR_MESSAGE);
-        }
+		}
+        
     }
 
     public void mouseClicked (MouseEvent evt)

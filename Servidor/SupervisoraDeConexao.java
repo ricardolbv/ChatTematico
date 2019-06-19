@@ -67,11 +67,21 @@ public class SupervisoraDeConexao extends Thread
 	    }
 	    catch (Exception erro)
 	    {} // sei que passei os parametros corretos
+		
+		//try //Envio de temas do bdo 
+		//{
+		//	System.out.println("Enviando temas!");
+		//	this.usuario.receba (new Comunicado ("TEMAS","Tema1","Tema2","Tema3"));
+		//}
+	//	catch (Exception erro)
+		//{System.err.println("Erro de envio de temas!");}
+		
 
 	    try
 	    {
 			for(;;)
 			{
+				this.usuario.receba (new Comunicado ("TEMAS","Tem","Tema2","Tema3"));
 			
 				Comunicado comunicado = this.usuario.envie (); //Esse comando é enviado do comunicado, e a escolha de Nick
 				 // Vou tentar enviar um comunicado ao cliente -- Comunicado recado = this.usuario.receba(new Comunicado ("DISP","TestMessage"));
@@ -83,7 +93,7 @@ public class SupervisoraDeConexao extends Thread
 
 				this.nick = comunicado.getComplemento1(); // Talvez aqui eu tenha de ler um outro comando que é o de ecolha de tema
 				this.tema = comunicado.getComplemento2();
-			//	this.aux  = this.usuarios.get(this.tema);
+			
 				
 				if (this.nick==null || this.tema == null) // nao checar tema 
 					return;
@@ -109,6 +119,8 @@ public class SupervisoraDeConexao extends Thread
 		}
 		catch (Exception erro)
 		{
+			synchronized (this.usuarios)
+		{
 			if (this.usuarios.get(this.tema).get(this.nick)!=null) // nao esta retirando
 			    this.usuarios.get(this.tema).remove(this.nick);
 
@@ -121,6 +133,8 @@ public class SupervisoraDeConexao extends Thread
 		    {} // so tentando fechar antes de acabar a thread
 
 			return;
+		
+		}
 		}
 
         try

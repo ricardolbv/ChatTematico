@@ -35,6 +35,7 @@ public class AceitadoraDeConexao extends Thread
             try
             {
                 conexao = this.pedido.accept();
+				
             }
             catch (Exception erro)
             {
