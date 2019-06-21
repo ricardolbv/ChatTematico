@@ -74,11 +74,7 @@ class JanelaDeEscolhaDeNick extends    JFrame
 		this.add (this.txfTema);
         this.add (btnOk);
         this.add (new JLabel ());
-		//this.add (new JLabel ());
 		this.add(lblTemas);
-		//this.add (new JLabel ());
-		//this.add (lblTema);
-		//this.add (this.txfTema);
 
         this .addWindowListener (this);
         btnOk.addMouseListener  (this);
@@ -128,15 +124,20 @@ class JanelaDeEscolhaDeNick extends    JFrame
 
     private void trateClickEmOk ()
     {
-						// verifico se o tema digitado esta entre os diponiveis!!!
+			String tema = "";			// verifico se o tema digitado esta entre os diponiveis!!!
+			tema = this.txfTema.getText();
+			tema.toLowerCase();
 			
 			
-        if (!this.txfNick.getText().equals(""))
+        if (!this.txfNick.getText().equals("") && !this.txfTema.getText().equals(""))
         {
-            boolean nickCerto = true;
+            boolean nickCerto 		= true;
+			boolean temaContido 	= true;
 
             if (this.txfNick.getText().toUpperCase().equals("TODOS"))
                 nickCerto = false;
+			else if (!this.temas.contains(tema))
+				temaContido = false;
             else
             {
                 try
@@ -160,7 +161,7 @@ class JanelaDeEscolhaDeNick extends    JFrame
             }
 			
 
-            if (nickCerto)
+            if (nickCerto && temaContido)
             {
                 try
                 {
@@ -177,8 +178,8 @@ class JanelaDeEscolhaDeNick extends    JFrame
             }
             else // if (comunicado.getComando().equals("ERR"))
                 JOptionPane.showMessageDialog(null/*sem janela mãe*/,
-                "O nick escolhido é inválido ou já está em uso!",
-                "Escolha outro nick",
+                "O nick escolhido é inválido ou o tema nao esta disponivel",
+                "Escolha outro nick ou escolha um dos temas indicados na '->'",
                 JOptionPane.ERROR_MESSAGE);
 		}
         

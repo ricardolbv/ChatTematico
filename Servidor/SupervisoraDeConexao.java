@@ -1,3 +1,4 @@
+import bd.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -9,7 +10,7 @@ public class SupervisoraDeConexao extends Thread
     private Parceiro                 usuario;
     private Socket                   conexao;
     private  HashMap<String,HashMap<String,Parceiro>> usuarios;
-//	private HashMap<String, Parceiro> aux;
+
 
     public SupervisoraDeConexao
     (Socket conexao,  HashMap<String,HashMap<String,Parceiro>> usuarios)
@@ -66,32 +67,68 @@ public class SupervisoraDeConexao extends Thread
 						  transmissor);
 	    }
 	    catch (Exception erro)
-	    {} // sei que passei os parametros corretos
+	    {} 
 		
-		//try //Envio de temas do bdo 
-		//{
-		//	System.out.println("Enviando temas!");
-		//	this.usuario.receba (new Comunicado ("TEMAS","Tema1","Tema2","Tema3"));
-		//}
-	//	catch (Exception erro)
-		//{System.err.println("Erro de envio de temas!");}
+		
+		// Enviando a conexao com o bd -----
+		/*
+			if (!Temas.cadastrado(1) || !Temas.cadastrado(2) || !Temas.cadastrado(3))   // se a tabela nao tiver Temas ja cadastrados
+			{
+				try
+				{
+					int cod =  1; int cod1 = 2; int cod2 = 3;
+					String nome = "Amor"; String nome1 = "Futebol"; String nome2 = "Politica";
+					
+					
+					
+					Tema tema1= new Tema(cod, nome);
+					Tema tema2= new Tema(cod1, nome1);
+					Tema tema3= new Tema(cod2, nome2);
+				
+					//Incluindo na tabela
+					Temas.incluir(tema1);
+					Temas.incluir(tema2);
+					Temas.incluir(tema3);
+				}
+				catch(SQLException erro)
+				{System.err.println("Erro na inicializacao dos temas!");}
+			}
+			
+			String tema1 = ""; String tema2 = ""; String tema3 = "";
+			else if (Temas.cadastrado(1) || Temas.cadastrado(2) || Temas.cadastrado(3))
+			{
+				try
+				{
+					tema1 += " "+Temas.getTema(1);
+					tema2 += " "+Temas.getTema(2);
+					tema3 += " "+Temas.getTema(3);
+				}
+				catch(SQLException erro)
+				{System.err.println("Erro ao pegar temas do BD")}
+			}
+		
+		*/
+	
 		
 
 	    try
 	    {
 			for(;;)
 			{
-				this.usuario.receba (new Comunicado ("TEMAS","Tem","Tema2","Tema3"));
+			/*
+				this.usuario.receba (new Comunicado ("TEMAS",tema1,tema2,tema3)); //Envio de dados do BD
+			*/
+			
+			this.usuario.receba (new Comunicado ("TEMAS","Amor","Futebol","Politica")); //Apague aqui caso queira conectar o BD
 			
 				Comunicado comunicado = this.usuario.envie (); //Esse comando é enviado do comunicado, e a escolha de Nick
-				 // Vou tentar enviar um comunicado ao cliente -- Comunicado recado = this.usuario.receba(new Comunicado ("DISP","TestMessage"));
-				//Ex envio de recado this.usuario.receba (new Comunicado ("ERR"));
+				 
 				
 				if (comunicado==null ||
 				   !comunicado.getComando().equals("NIK"))  
 					return;
 
-				this.nick = comunicado.getComplemento1(); // Talvez aqui eu tenha de ler um outro comando que é o de ecolha de tema
+				this.nick = comunicado.getComplemento1(); 
 				this.tema = comunicado.getComplemento2();
 			
 				
@@ -118,7 +155,7 @@ public class SupervisoraDeConexao extends Thread
         	this.usuario.receba (new Comunicado ("BOM"));
 		}
 		catch (Exception erro)
-		{
+	{
 			synchronized (this.usuarios)
 		{
 			if (this.usuarios.get(this.tema).get(this.nick)!=null) // nao esta retirando
@@ -135,8 +172,8 @@ public class SupervisoraDeConexao extends Thread
 			return;
 		
 		}
-		}
-
+		
+	}
         try
         {
 			synchronized (this.usuarios)
@@ -158,6 +195,7 @@ public class SupervisoraDeConexao extends Thread
 						"ENT",this.nick));
 					}
 			}
+			
 
 			for(;;)
 			{
